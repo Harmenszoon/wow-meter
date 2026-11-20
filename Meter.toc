@@ -1,0 +1,8 @@
+## Interface: 16001
+## Title: Meter
+## Author: Harmenszoon
+## Notes: A compact layout for Blizzard's damage meter. Right-click the meter for settings.
+## Version: 0.1.2
+## Dependencies: Blizzard_DamageMeter
+
+Meter.lua
