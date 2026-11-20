@@ -1,2 +1,6 @@
 * text=auto eol=lf
+*.png binary
 .gitattributes export-ignore
+.github export-ignore
+.gitignore export-ignore
+.pkgmeta export-ignore

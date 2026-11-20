@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check the manifest version and read the tag notes
+        run: |
+          grep -Fxq -- "## Version: ${GITHUB_REF_NAME#v}" *.toc
+          mkdir -p .release
+          git for-each-ref --format='%(contents)' "$GITHUB_REF" > .release/notes.md
+          test -s .release/notes.md
+
+      - name: Package and publish
+        uses: BigWigsMods/packager@01e8631a69c69d7654c788d152630d5fed9e3812 # v2.7.0
+        with:
+          args: -g forever -u
+        env:
+          GH_API_TOKEN: ${{ github.token }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}

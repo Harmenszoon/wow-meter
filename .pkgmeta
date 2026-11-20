@@ -1,0 +1,3 @@
+manual-changelog:
+  filename: .release/notes.md
+  markup-type: markdown
