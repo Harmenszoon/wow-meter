@@ -4,9 +4,19 @@ on:
   push:
     tags:
       - 'v[0-9]*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to publish
+        required: true
+        type: string
 
 permissions:
   contents: write
+
+concurrency: release-${{ inputs.tag || github.ref_name }}
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
   release:
@@ -14,14 +24,15 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
           fetch-depth: 0
           persist-credentials: false
 
       - name: Check the manifest version and read the tag notes
         run: |
-          grep -Fxq -- "## Version: ${GITHUB_REF_NAME#v}" *.toc
+          grep -Fxq -- "## Version: ${RELEASE_TAG#v}" *.toc
           mkdir -p .release
-          git for-each-ref --format='%(contents)' "$GITHUB_REF" > .release/notes.md
+          git for-each-ref --format='%(contents)' "refs/tags/$RELEASE_TAG" > .release/notes.md
           test -s .release/notes.md
 
       - name: Package and publish
